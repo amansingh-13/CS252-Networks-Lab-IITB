@@ -8,27 +8,37 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <time.h>
+time_t mytime;
 
 #define MAXBUFLEN 100
 
+// idea : https://gist.github.com/mokumus/bdd9d4fa837345f01b35e0cd03d67f35
+#define printf(...) mytime = time(NULL), printf("[%02d:%02d:%02d] ",\
+		localtime(&mytime)->tm_hour, localtime(&mytime)->tm_min,\
+		localtime(&mytime)->tm_sec),\
+		printf(__VA_ARGS__)
+
 // get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa){    
+void *get_in_addr(struct sockaddr *sa)
+{    
     if (sa->sa_family == AF_INET) {        
         return &(((struct sockaddr_in*)sa)->sin_addr);    
     }    
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p){
-    int dup=SEQ_NO;
+int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p)
+{
+    int dup = SEQ_NO;
     int numbytes;
-    int count=0;
+    int count = 0;
     while (dup != 0) {
         dup /= 10;
         ++count;
     }
-    char* MESSAGE = (char*)malloc((17+count)*sizeof(char));
-    snprintf(MESSAGE, 17+count,"Acknowledgement:%d",SEQ_NO); 
+    char* MESSAGE = (char*)malloc((16+count+1)*sizeof(char));
+    snprintf(MESSAGE, 16+count+1, "Acknowledgement:%d", SEQ_NO); 
     if ((numbytes = sendto(sockfd, MESSAGE, strlen(MESSAGE), 0,
                            p->ai_addr, p->ai_addrlen)) == -1)
     {
@@ -36,17 +46,21 @@ int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p){
         exit(1);
     }
 
+    // hardcoded 127.0.0.1
+    printf("receiver: sent ACK: %d (%d bytes) to 127.0.0.1\n\n", SEQ_NO, numbytes);
+
     return numbytes;
 }   
 
-int receivePacket(struct sockaddr_storage their_addr_rcv,
-                int sockrcv){
-    printf("receiver: waiting to recvfrom...\n");    
+int receivePacket(int sockrcv)
+{
     
     char buf[MAXBUFLEN]; 
     char s[INET6_ADDRSTRLEN];  
+    struct sockaddr_storage their_addr_rcv;  
     socklen_t addr_len_rcv = sizeof their_addr_rcv; 
     int numbytes_rcv;   
+
     if ((numbytes_rcv = recvfrom(sockrcv, buf, MAXBUFLEN-1 , 0,        
             (struct sockaddr *)&their_addr_rcv, &addr_len_rcv)) == -1) {        
         perror("recvfrom");        
@@ -55,7 +69,7 @@ int receivePacket(struct sockaddr_storage their_addr_rcv,
 
     printf("receiver: got packet from %s\n",        
             inet_ntop(their_addr_rcv.ss_family,            
-            get_in_addr((struct sockaddr *)&their_addr_rcv),            
+            get_in_addr((struct sockaddr *)&their_addr_rcv),
             s, sizeof s));    
     printf("receiver: packet is %d bytes long\n", numbytes_rcv);    
     
@@ -65,32 +79,30 @@ int receivePacket(struct sockaddr_storage their_addr_rcv,
     return atoi(&buf[7]);
 }
 
-int main(int argc, char* argv[]){    
+int main(int argc, char* argv[])
+{    
     if(argc != 4){
         fprintf(stderr, "usage: receiver <ReceiverPort> <SenderPort> <PacketDropProbability>\n");
         exit(1);
     }
 
-    /////////////////////
-    // Argument mapping//
-    /////////////////////
+      //////////////////////
+     // Argument mapping //
+    //////////////////////
     char* RECEIVER_PORT     =   argv[1];
     char* SENDER_PORT       =   argv[2];
-    int DROP_PROBABILITY    =   atoi(argv[3]);
+    double DROP_PROBABILITY    =   atof(argv[3]);
 
-    ///////////////////////////////
-    //Receiver utility variables //
-    ///////////////////////////////
+      ////////////////////////////////
+     // Receiver utility variables //
+    ////////////////////////////////
     int sockrcv;    
     struct addrinfo hints_rcv, *servinfo_rcv, *p_rcv;    
     int rv_rcv;    
-    struct sockaddr_storage their_addr_rcv;  
 
-    int EXPECTED_SEQ_NO=1;
-
-    /////////////////////////
-    // Setup Receiver Stuff//
-    /////////////////////////
+      //////////////////////////
+     // Setup Receiver Stuff //
+    //////////////////////////
     memset(&hints_rcv, 0, sizeof hints_rcv);    
     hints_rcv.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4    
     hints_rcv.ai_socktype = SOCK_DGRAM;    
@@ -100,7 +112,6 @@ int main(int argc, char* argv[]){
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv_rcv));        
         return 1;    
     }    
-    
     
     // Get the first socket we can bind to!
     for(p_rcv = servinfo_rcv; p_rcv != NULL; p_rcv = p_rcv->ai_next) {        
@@ -122,11 +133,10 @@ int main(int argc, char* argv[]){
         return 2;    
     }    
     freeaddrinfo(servinfo_rcv);
-    //////////////////////////////////////////////////
 
-    ////////////////////////
-    //ACK Sender variables//
-    ////////////////////////
+      //////////////////////////
+     // ACK Sender variables //
+    //////////////////////////
     int sockfd;
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -137,9 +147,9 @@ int main(int argc, char* argv[]){
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
 
-    ///////////////////////////
-    // ACK Sender Setup stuff//
-    ///////////////////////////
+      ////////////////////////////
+     // ACK Sender Setup stuff //
+    ////////////////////////////
     if ((rv = getaddrinfo(HOSTNAME, RECEIVER_PORT, &hints, &servinfo)) != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
@@ -163,38 +173,54 @@ int main(int argc, char* argv[]){
         return 2;
     }
     else
-        printf("receiver: found and bound a socket\n");
-    //////////////////////////////////////////////////
+        printf("receiver: found and bound a socket\n\n");
 
-    /////////////////////////
-    //All Socket setup done//
-    /////////////////////////
-
-
-    //////////////////////////////
-    //Packet Receiving component//
-    //////////////////////////////
-    int PACKET_NO = receivePacket(their_addr_rcv,sockrcv);
-    printf("Packet received: %d\n",PACKET_NO);
-    ///////////////////////////////////
-    //Packet Receiving component ends//
-    ///////////////////////////////////
-
-    //////////////////////////
-    // Build ACK for Sending//
-    //////////////////////////
-    int numbytes = sendACK(EXPECTED_SEQ_NO, sockfd, p);        
-    printf("receiver: sent %d bytes to %s\n", numbytes, HOSTNAME);
     freeaddrinfo(servinfo);
-    ///////////////////////////
-    // ACK sending setup ends//
+
+      ///////////////////////////
+     // All Socket setup done //
     ///////////////////////////
 
-    //////////////////
-    // Close Sockets//
-    //////////////////
+    int EXPECTED_SEQ_NO = 1;
+    srand(420);
+
+    while(1)
+    {
+	      ////////////////////////////////
+	     // Packet Receiving component //
+	    ////////////////////////////////
+    	    printf("receiver: waiting to recvfrom...\n"); 
+	    int PACKET_NO = receivePacket(sockrcv);
+
+	    if(PACKET_NO == EXPECTED_SEQ_NO && rand()/((double)RAND_MAX) >= DROP_PROBABILITY)
+	    {
+	    	    printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+		      ///////////////////////////
+		     // Build ACK for Sending //
+		    ///////////////////////////
+		    sendACK(++EXPECTED_SEQ_NO, sockfd, p);
+	    } 
+	    else if (PACKET_NO == 0)
+	    {
+		    printf("receiver: Recieved END message, exiting!\n");
+		    break;
+
+	    }
+	    else if(PACKET_NO != EXPECTED_SEQ_NO) 
+		    printf("receiver: Wrong packet received (Packet: %d), expecting %d\n", PACKET_NO, EXPECTED_SEQ_NO);
+	    else
+	    {
+	    	    printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+		    printf("receiver: Dropping Packet: %d\n", PACKET_NO);
+	    }
+    }
+
+      ///////////////////
+     // Close Sockets //
+    ///////////////////
     close(sockrcv);
     close(sockfd); 
 
     return 0;
 }
+

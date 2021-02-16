@@ -1,3 +1,11 @@
+/*
+ * TO_CONSIDER :
+ * [ ] how much logging is required ?
+ * [ ] dynamic extra waiting if ACK received is wrong ?
+ * [ ] implement creating and writing to sender.txt, receiver.txt
+ * [ ] Why exit() in receiveACK and sendMessage? Can we handle the error instead ?
+ */ 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,70 +16,78 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <poll.h>
+#include <time.h>
+time_t mytime;
 
 #define MAXBUFLEN 100
 
+// idea : https://gist.github.com/mokumus/bdd9d4fa837345f01b35e0cd03d67f35
+#define printf(...) mytime = time(NULL), printf("[%02d:%02d:%02d] ",\
+		localtime(&mytime)->tm_hour, localtime(&mytime)->tm_min,\
+		localtime(&mytime)->tm_sec),\
+		printf(__VA_ARGS__)
+
 // get sockaddr, IPv4 or IPv6:
-// Utility required for receiving packets
-void *get_in_addr(struct sockaddr *sa){    
+void *get_in_addr(struct sockaddr *sa)
+{    
     if (sa->sa_family == AF_INET) {        
         return &(((struct sockaddr_in*)sa)->sin_addr);    
     }    
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int sendMessage(int SEQ_NO, int sockfd, struct addrinfo* p){
-    ///////////////////////
-    // Build and  Message//
-    ///////////////////////
-    int dup=SEQ_NO;
-    int count=0;
+int sendMessage(int SEQ_NO, int sockfd, struct addrinfo* p)
+{
+    int dup = SEQ_NO;
+    int count = 0;
     while (dup != 0) {
         dup /= 10; 
         ++count;
     }
-    char* MESSAGE = (char*)malloc((8+count)*sizeof(char));
-    snprintf(MESSAGE, 7+count+1,"Packet:%d",SEQ_NO);
+    if(SEQ_NO==0) count=1; // END message case
+
+    char* MESSAGE = (char*) malloc((7+count+1)*sizeof(char));
+    snprintf(MESSAGE, 7+count+1, "Packet:%d", SEQ_NO);
 
     int numbytes;
     if ((numbytes = sendto(sockfd, MESSAGE, strlen(MESSAGE), 0,
                            p->ai_addr, p->ai_addrlen)) == -1)
     {
         perror("sender: sendto");
-        exit(1);
+        exit(1); 
     }
+    
+    // hardcoded 127.0.0.1
+    printf("sender: sent PACKET: %d (%d bytes) to 127.0.0.1\n", SEQ_NO, numbytes);
 
     return numbytes;
-    ///////////////////////////////
-    // Message sending setup ends//
-    ///////////////////////////////
 }
 
-int receiveACK(struct sockaddr_storage their_addr_rcv,
-                int sockrcv){
-
-    printf("sender: waiting to recvfrom ACK...\n");    
-    
+int receiveACK(int sockrcv)
+{
     char buf[MAXBUFLEN]; 
     char s[INET6_ADDRSTRLEN];  
+    struct sockaddr_storage their_addr_rcv;       
     socklen_t addr_len_rcv = sizeof their_addr_rcv;
     int numbytes_rcv;    
+
     if ((numbytes_rcv = recvfrom(sockrcv, buf, MAXBUFLEN-1 , 0,        
             (struct sockaddr *)&their_addr_rcv, &addr_len_rcv)) == -1) {        
         perror("recvfrom");        
         exit(1);
     }    
 
-    printf("sender: got packet from %s\n",        
+    printf("sender: got PACKET from %s\n",        
             inet_ntop(their_addr_rcv.ss_family,            
             get_in_addr((struct sockaddr *)&their_addr_rcv),            
             s, sizeof s));    
-    printf("sender: packet is %d bytes long\n", numbytes_rcv);    
+    printf("sender: PACKET is %d bytes long\n", numbytes_rcv);    
     
-    buf[numbytes_rcv] = '\0';    
-    printf("sender: packet contains \"%s\"\n", buf);
+    buf[numbytes_rcv] = '\0';
+    printf("sender: PACKET contains \"%s\"\n", buf);
 
-    return atoi(&buf[16]); // atoi(&buf[16]) = ACK_SEQ_NO
+    return atoi(&buf[16]);
 }
 
 int main(int argc, char *argv[])
@@ -82,32 +98,30 @@ int main(int argc, char *argv[])
         exit(1);
     }
   
-    /////////////////////
-    // Argument mapping//
-    /////////////////////
+      //////////////////////
+     // Argument mapping //
+    //////////////////////
     char* SENDER_PORT           =   argv[1];
     char* RECEIVER_PORT         =   argv[2];
     int RETRANSMISSION_TIMER    =   atoi(argv[3]);
     int NO_OF_PACKETS_TO_SEND   =   atoi(argv[4]);
     
-    /////////////////////////////
-    //Sender utility variables //
-    /////////////////////////////
+      //////////////////////////////
+     // Sender utility variables //
+    //////////////////////////////
     int sockfd;
     struct addrinfo hints, *servinfo, *p;
     int rv;
 
     char* HOSTNAME = "localhost"; // or "127.0.0.1"
 
-    int SEQ_NO=1;
-
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_DGRAM;
 
-    ///////////////////////
-    // Setup Sender Stuff//
-    ///////////////////////
+      ////////////////////////
+     // Setup Sender Stuff //
+    ////////////////////////
     if ((rv = getaddrinfo(HOSTNAME, SENDER_PORT, &hints, &servinfo)) != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
@@ -131,24 +145,18 @@ int main(int argc, char *argv[])
         return 2;
     }
     else
-        printf("sender: found and bound a socket\n");
-    //////////////////////////////////////////////////
-
+        printf("sender: found and bound a socket\n\n");
     
-    ///////////////////////////
-    // ACK Receiver variables//
-    ///////////////////////////
+      ////////////////////////////
+     // ACK Receiver variables //
+    ////////////////////////////
     int sockrcv;    
     struct addrinfo hints_rcv, *servinfo_rcv, *p_rcv;    
     int rv_rcv;    
-    struct sockaddr_storage their_addr_rcv;       
-    // socklen_t addr_len_rcv;    
 
-    // int EXPECTED_SEQ_NO=1;
-
-    /////////////////////////////
-    // ACK Receiver Setup stuff//
-    /////////////////////////////
+      //////////////////////////////
+     // ACK Receiver Setup stuff //
+    //////////////////////////////
     memset(&hints_rcv, 0, sizeof hints_rcv);    
     hints_rcv.ai_family = AF_UNSPEC; // set to AF_INET to force IPv4    
     hints_rcv.ai_socktype = SOCK_DGRAM;    
@@ -176,50 +184,71 @@ int main(int argc, char *argv[])
 
     if (p_rcv == NULL) {        
         fprintf(stderr, "sender: failed to bind socket for ACK\n");        
-        return 2;    
+        return 2; 
     }    
     
     freeaddrinfo(servinfo_rcv);  
-    //////////////////////////////////////////////////
-
-    /////////////////////////
-    //All Socket setup done//
-    ///////////////////////// 
-
-    //////////////////////////////
-    // Send Message//
-    //////////////////////////////
-    int numbytes=sendMessage(SEQ_NO, sockfd, p);
-    printf("sender: sent %d bytes to %s\n", numbytes, HOSTNAME);
     freeaddrinfo(servinfo);
-    /////////////////////////
-    // Message sending ends//
-    /////////////////////////
 
-
-
+      ///////////////////////////
+     // All Socket setup done //
     ///////////////////////////
-    //ACK Receiving component//
-    ///////////////////////////
-    int ACK_SEQ_NO = receiveACK(their_addr_rcv,sockrcv);
-    if(ACK_SEQ_NO==SEQ_NO){
-        printf("nice\n");
-    }
-    else if(ACK_SEQ_NO==SEQ_NO+1){
-        printf("retransmit +1");
-    }
-    else{
-        printf("ignore ACKK and wait for next ACK or timeout");
-    }
-    ////////////////////////////////
-    //ACK Receiving component ends//
-    ////////////////////////////////   
 
-    //////////////////
-    // Close Sockets//
-    //////////////////
+    int SEQ_NO = 1;
+
+    struct pollfd pfds[1];
+    pfds[0].fd = sockrcv;
+    pfds[0].events = POLLIN;
+
+    while(SEQ_NO <= NO_OF_PACKETS_TO_SEND)
+    {
+	      ////////////////////
+	     //  Send Message  //
+	    ////////////////////
+	    sendMessage(SEQ_NO, sockfd, p);
+
+	    int poll_count = poll(pfds, 1, RETRANSMISSION_TIMER);
+    	    printf("sender: waiting to recvfrom ACK...\n");
+
+	    if(poll_count == -1) {
+			perror("poll");
+			exit(1);
+	    }
+	    else if (poll_count == 0) 
+		    printf("sender: PACKET: %d's retransmission timer expired !!\n", SEQ_NO);
+	    else {
+		      /////////////////////////////
+                     // ACK Receiving component //
+                    /////////////////////////////
+		    int pollin_happened = pfds[0].revents & POLLIN;
+		    if(!pollin_happened) {
+		    	printf("sender: Unexpected event: %d\n", pfds[0].revents);
+			continue;
+		    }
+
+		    int ACK_SEQ_NO = receiveACK(sockrcv);
+
+		    if(ACK_SEQ_NO == SEQ_NO+1) {
+		    	SEQ_NO++;
+		        printf("sender: Expected ACK received (Acknowledgement: %d)\n\n",
+					ACK_SEQ_NO);
+		    } else {
+			// Point 2 in TO_CONSIDER
+		        printf("sender: Wrong ACK received (Acknowledgement: %d), expecting %d\n",
+					ACK_SEQ_NO, SEQ_NO);
+		    }
+	    }
+    }
+
+    printf("sender: Sending END message and quitting!\n");
+    sendMessage(0, sockfd, p);
+
+      ///////////////////
+     // Close Sockets //
+    ///////////////////
     close(sockrcv); 
     close(sockfd);
 
     return 0;
 }
+
