@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <poll.h>
 #include <time.h>
+#include <sys/time.h>
 time_t mytime;
 
 #define MAXBUFLEN 100
@@ -206,36 +207,64 @@ int main(int argc, char *argv[])
 	     //  Send Message  //
 	    ////////////////////
 	    sendMessage(SEQ_NO, sockfd, p);
-
-	    int poll_count = poll(pfds, 1, RETRANSMISSION_TIMER);
     	    printf("sender: waiting to recvfrom ACK...\n");
+	    
+	    // Assuming non-blocking code runs at a timescale way lesser than milliseconds
+	    int ms_to_wait_for = RETRANSMISSION_TIMER;
+	    struct timeval current_time;
+	    gettimeofday(&current_time, NULL);
+	    unsigned long int init_ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
 
-	    if(poll_count == -1) {
-			perror("poll");
-			exit(1);
-	    }
-	    else if (poll_count == 0) 
-		    printf("sender: PACKET: %d's retransmission timer expired !!\n", SEQ_NO);
-	    else {
-		      /////////////////////////////
-                     // ACK Receiving component //
-                    /////////////////////////////
-		    int pollin_happened = pfds[0].revents & POLLIN;
-		    if(!pollin_happened) {
-		    	printf("sender: Unexpected event: %d\n", pfds[0].revents);
-			continue;
+	    while(ms_to_wait_for >= 0) // if this becomes negative, we lose a log of `timer expired`
+	    {
+		    int poll_count = poll(pfds, 1, ms_to_wait_for);
+
+		    if(poll_count == -1)
+		    {
+			    perror("poll");
+			    exit(1);
 		    }
+		    else if (poll_count == 0)
+		    { 
+			    printf("sender: PACKET: %d's retransmission timer expired !!\n", SEQ_NO);
+			    break;
+		    }
+		    else 
+		    {
+			      /////////////////////////////
+			     // ACK Receiving component //
+			    /////////////////////////////
+			    int pollin_happened = pfds[0].revents & POLLIN;
+			    if(!pollin_happened)
+			    {
+				printf("sender: Unexpected event: %d\n", pfds[0].revents);
 
-		    int ACK_SEQ_NO = receiveACK(sockrcv);
+	    			gettimeofday(&current_time, NULL);
+	    			unsigned long int ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
+				ms_to_wait_for -= (int) (ms_from_epoch - init_ms_from_epoch);
+				continue;
+			    }
 
-		    if(ACK_SEQ_NO == SEQ_NO+1) {
-		    	SEQ_NO++;
-		        printf("sender: Expected ACK received (Acknowledgement: %d)\n\n",
-					ACK_SEQ_NO);
-		    } else {
-			// Point 2 in TO_CONSIDER
-		        printf("sender: Wrong ACK received (Acknowledgement: %d), expecting %d\n",
-					ACK_SEQ_NO, SEQ_NO);
+			    int ACK_SEQ_NO = receiveACK(sockrcv);
+
+			    if(ACK_SEQ_NO == SEQ_NO+1) 
+			    {
+				SEQ_NO++;
+				printf("sender: Expected ACK received (Acknowledgement: %d)\n\n",
+						ACK_SEQ_NO);
+				break;
+			    } 
+			    else 
+			    {
+				// Point 2 in TO_CONSIDER
+				printf("sender: Wrong ACK received (Acknowledgement: %d), expecting %d\n",
+						ACK_SEQ_NO, SEQ_NO);
+
+	    			gettimeofday(&current_time, NULL);
+	    			unsigned long int ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
+				ms_to_wait_for -= (int) (ms_from_epoch - init_ms_from_epoch);
+				continue;
+			    }
 		    }
 	    }
     }
