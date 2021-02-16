@@ -206,8 +206,11 @@ int main(int argc, char* argv[])
 		    break;
 
 	    }
-	    else if(PACKET_NO != EXPECTED_SEQ_NO) 
+	    else if(PACKET_NO != EXPECTED_SEQ_NO)
+	    { 
 		    printf("receiver: Wrong packet received (Packet: %d), expecting %d\n", PACKET_NO, EXPECTED_SEQ_NO);
+		    sendACK(EXPECTED_SEQ_NO, sockfd, p);
+	    }
 	    else
 	    {
 	    	    printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
