@@ -28,7 +28,7 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p)
+int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p, FILE* file)
 {
     int dup = SEQ_NO;
     int numbytes;
@@ -48,11 +48,12 @@ int sendACK(int SEQ_NO, int sockfd, struct addrinfo* p)
 
     // hardcoded 127.0.0.1
     printf("receiver: sent ACK: %d (%d bytes) to 127.0.0.1\n\n", SEQ_NO, numbytes);
+    fprintf(file,"receiver: sent ACK: %d (%d bytes) to 127.0.0.1\n\n", SEQ_NO, numbytes);
 
     return numbytes;
 }   
 
-int receivePacket(int sockrcv)
+int receivePacket(int sockrcv, FILE* file)
 {
     
     char buf[MAXBUFLEN]; 
@@ -71,10 +72,17 @@ int receivePacket(int sockrcv)
             inet_ntop(their_addr_rcv.ss_family,            
             get_in_addr((struct sockaddr *)&their_addr_rcv),
             s, sizeof s));    
+    fprintf(file,"receiver: got message from %s\n",        
+            inet_ntop(their_addr_rcv.ss_family,            
+            get_in_addr((struct sockaddr *)&their_addr_rcv),
+            s, sizeof s));
+
     printf("receiver: message is %d bytes long\n", numbytes_rcv);    
-    
+    fprintf(file,"receiver: message is %d bytes long\n", numbytes_rcv);
+
     buf[numbytes_rcv] = '\0';    
     printf("receiver: message contains \"%s\"\n", buf);
+    fprintf(file,"receiver: message contains \"%s\"\n", buf);
 
     return atoi(&buf[7]);
 }
@@ -83,6 +91,13 @@ int main(int argc, char* argv[])
 {    
     if(argc != 4){
         fprintf(stderr, "usage: receiver <ReceiverPort> <SenderPort> <PacketDropProbability>\n");
+        exit(1);
+    }
+
+    FILE *file = fopen("receiver.txt", "w");
+    if (file == NULL) // Might fail to create file due to directory permissions
+    {
+        fprintf(stderr, "Error opening file!\n");
         exit(1);
     }
 
@@ -172,11 +187,15 @@ int main(int argc, char* argv[])
         fprintf(stderr, "receiver: failed to bind socket\n");
         return 2;
     }
-    else
+    else{
         printf("receiver: found and bound a socket\n\n");
+        fprintf(file,"receiver: found and bound a socket\n\n");
+    }
 
     freeaddrinfo(servinfo);
 
+    printf("sender: All socket setup done!\n\n");
+    fprintf(file,"sender: All socket setup done!\n\n");
       ///////////////////////////
      // All Socket setup done //
     ///////////////////////////
@@ -189,32 +208,39 @@ int main(int argc, char* argv[])
 	      ////////////////////////////////
 	     // Packet Receiving component //
 	    ////////////////////////////////
-    	    printf("receiver: waiting to recvfrom...\n"); 
-	    int PACKET_NO = receivePacket(sockrcv);
+        printf("receiver: waiting to recvfrom...\n"); 
+        fprintf(file,"receiver: waiting to recvfrom...\n");
+
+	    int PACKET_NO = receivePacket(sockrcv,file);
 
 	    if(PACKET_NO == EXPECTED_SEQ_NO && rand()/((double)RAND_MAX) >= DROP_PROBABILITY)
 	    {
-	    	    printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+            printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+            fprintf(file,"receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
 		      ///////////////////////////
 		     // Build ACK for Sending //
 		    ///////////////////////////
-		    sendACK(++EXPECTED_SEQ_NO, sockfd, p);
+		    sendACK(++EXPECTED_SEQ_NO, sockfd, p, file);
 	    } 
 	    else if (PACKET_NO == 0)
 	    {
 		    printf("receiver: Recieved END message, exiting!\n");
+            fprintf(file,"receiver: Recieved END message, exiting!\n");
 		    break;
 
 	    }
 	    else if(PACKET_NO != EXPECTED_SEQ_NO)
 	    { 
 		    printf("receiver: Wrong packet received (Packet: %d), expecting %d\n", PACKET_NO, EXPECTED_SEQ_NO);
-		    sendACK(EXPECTED_SEQ_NO, sockfd, p);
+            fprintf(file,"receiver: Wrong packet received (Packet: %d), expecting %d\n", PACKET_NO, EXPECTED_SEQ_NO);
+		    sendACK(EXPECTED_SEQ_NO, sockfd, p, file);
 	    }
 	    else
 	    {
-	    	    printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+            printf("receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
 		    printf("receiver: Dropping Packet: %d\n", PACKET_NO);
+            fprintf(file,"receiver: Expected packet received (Packet: %d)\n", PACKET_NO);
+		    fprintf(file,"receiver: Dropping Packet: %d\n", PACKET_NO);
 	    }
     }
 
@@ -223,6 +249,7 @@ int main(int argc, char* argv[])
     ///////////////////
     close(sockrcv);
     close(sockfd); 
+    fclose(file);
 
     return 0;
 }
