@@ -79,14 +79,14 @@ int receiveACK(int sockrcv)
         exit(1);
     }    
 
-    printf("sender: got PACKET from %s\n",        
+    printf("sender: got message from %s\n",        
             inet_ntop(their_addr_rcv.ss_family,            
             get_in_addr((struct sockaddr *)&their_addr_rcv),            
             s, sizeof s));    
-    printf("sender: PACKET is %d bytes long\n", numbytes_rcv);    
+    printf("sender: message is %d bytes long\n", numbytes_rcv);    
     
     buf[numbytes_rcv] = '\0';
-    printf("sender: PACKET contains \"%s\"\n", buf);
+    printf("sender: message contains \"%s\"\n", buf);
 
     return atoi(&buf[16]);
 }
@@ -210,7 +210,8 @@ int main(int argc, char *argv[])
     	    printf("sender: waiting to recvfrom ACK...\n");
 	    
 	    // Assuming non-blocking code runs at a timescale way lesser than milliseconds
-	    int ms_to_wait_for = RETRANSMISSION_TIMER;
+	    // Millisecond precision is enough for `timeout` parameter in poll()
+	    int ms_to_wait_for = RETRANSMISSION_TIMER*1000;
 	    struct timeval current_time;
 	    gettimeofday(&current_time, NULL);
 	    unsigned long int init_ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
