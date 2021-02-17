@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
 
 	    			gettimeofday(&current_time, NULL);
 	    			unsigned long int ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
-				ms_to_wait_for -= (int) (ms_from_epoch - init_ms_from_epoch);
+				ms_to_wait_for = RETRANSMISSION_TIMER - (int) (ms_from_epoch - init_ms_from_epoch);
 				continue;
 			    }
 
@@ -263,14 +263,14 @@ int main(int argc, char *argv[])
 
 	    			gettimeofday(&current_time, NULL);
 	    			unsigned long int ms_from_epoch = current_time.tv_sec*1000 + current_time.tv_usec/1000;
-				ms_to_wait_for -= (int) (ms_from_epoch - init_ms_from_epoch);
+				ms_to_wait_for = RETRANSMISSION_TIMER - (int) (ms_from_epoch - init_ms_from_epoch);
 				continue;
 			    }
 		    }
 	    }
     }
 
-    printf("sender: Sending END message and quitting!\n");
+    printf("sender: Sending END message and exiting!\n");
     sendMessage(0, sockfd, p);
 
       ///////////////////
