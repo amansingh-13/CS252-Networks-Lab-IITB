@@ -67,14 +67,14 @@ int receivePacket(int sockrcv)
         exit(1);
     }    
 
-    printf("receiver: got packet from %s\n",        
+    printf("receiver: got message from %s\n",        
             inet_ntop(their_addr_rcv.ss_family,            
             get_in_addr((struct sockaddr *)&their_addr_rcv),
             s, sizeof s));    
-    printf("receiver: packet is %d bytes long\n", numbytes_rcv);    
+    printf("receiver: message is %d bytes long\n", numbytes_rcv);    
     
     buf[numbytes_rcv] = '\0';    
-    printf("receiver: packet contains \"%s\"\n", buf);
+    printf("receiver: message contains \"%s\"\n", buf);
 
     return atoi(&buf[7]);
 }
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     if (p_rcv == NULL) {        
         fprintf(stderr, "sender: failed to bind socket for ACK\n");        
         return 2;    
-    }    
+    }
     freeaddrinfo(servinfo_rcv);
 
       //////////////////////////
