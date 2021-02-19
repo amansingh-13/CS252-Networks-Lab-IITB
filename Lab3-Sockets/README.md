@@ -66,3 +66,5 @@ PacketDropProbability
 : the probability (between 0 and 1) with which each packet received by the receiver gets dropped (here, this is used simply to simulate the loss of packets in real network communication, which may occur due to various real world factors)
 
 Once both the sender and the receiver are up and running, packets and acknowledgements are transmitted and received, and all program outputs are printed to the terminal windows as well as to two files named `sender.txt` and `receiver.txt` respectively, with appropriate time stamps too.
+
+We have included sample output files for one of our test runs in this directory. This run was conducted with an emulated delay of 100ms, retransmission timer of 300ms, 15 total packets, and a packet drop probability of 0.3.
