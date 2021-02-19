@@ -1,0 +1,141 @@
+[20:12:05] sender: found and bound a socket
+
+[20:12:05] sender: All socket setup done!
+
+[20:12:05] sender: sent PACKET: 1 (8 bytes) to 127.0.0.1
+[20:12:05] sender: waiting to recvfrom ACK...
+[20:12:05] sender: PACKET: 1's retransmission timer expired !!
+[20:12:05] sender: sent PACKET: 1 (8 bytes) to 127.0.0.1
+[20:12:05] sender: waiting to recvfrom ACK...
+[20:12:05] sender: got message from 127.0.0.1
+[20:12:05] sender: message is 17 bytes long
+[20:12:05] sender: message contains "Acknowledgement:2"
+[20:12:05] sender: Expected ACK received (Acknowledgement: 2)
+
+[20:12:05] sender: sent PACKET: 2 (8 bytes) to 127.0.0.1
+[20:12:05] sender: waiting to recvfrom ACK...
+[20:12:05] sender: PACKET: 2's retransmission timer expired !!
+[20:12:05] sender: sent PACKET: 2 (8 bytes) to 127.0.0.1
+[20:12:05] sender: waiting to recvfrom ACK...
+[20:12:06] sender: got message from 127.0.0.1
+[20:12:06] sender: message is 17 bytes long
+[20:12:06] sender: message contains "Acknowledgement:3"
+[20:12:06] sender: Expected ACK received (Acknowledgement: 3)
+
+[20:12:06] sender: sent PACKET: 3 (8 bytes) to 127.0.0.1
+[20:12:06] sender: waiting to recvfrom ACK...
+[20:12:06] sender: got message from 127.0.0.1
+[20:12:06] sender: message is 17 bytes long
+[20:12:06] sender: message contains "Acknowledgement:4"
+[20:12:06] sender: Expected ACK received (Acknowledgement: 4)
+
+[20:12:06] sender: sent PACKET: 4 (8 bytes) to 127.0.0.1
+[20:12:06] sender: waiting to recvfrom ACK...
+[20:12:06] sender: PACKET: 4's retransmission timer expired !!
+[20:12:06] sender: sent PACKET: 4 (8 bytes) to 127.0.0.1
+[20:12:06] sender: waiting to recvfrom ACK...
+[20:12:06] sender: PACKET: 4's retransmission timer expired !!
+[20:12:06] sender: sent PACKET: 4 (8 bytes) to 127.0.0.1
+[20:12:06] sender: waiting to recvfrom ACK...
+[20:12:07] sender: got message from 127.0.0.1
+[20:12:07] sender: message is 17 bytes long
+[20:12:07] sender: message contains "Acknowledgement:5"
+[20:12:07] sender: Expected ACK received (Acknowledgement: 5)
+
+[20:12:07] sender: sent PACKET: 5 (8 bytes) to 127.0.0.1
+[20:12:07] sender: waiting to recvfrom ACK...
+[20:12:07] sender: got message from 127.0.0.1
+[20:12:07] sender: message is 17 bytes long
+[20:12:07] sender: message contains "Acknowledgement:6"
+[20:12:07] sender: Expected ACK received (Acknowledgement: 6)
+
+[20:12:07] sender: sent PACKET: 6 (8 bytes) to 127.0.0.1
+[20:12:07] sender: waiting to recvfrom ACK...
+[20:12:07] sender: PACKET: 6's retransmission timer expired !!
+[20:12:07] sender: sent PACKET: 6 (8 bytes) to 127.0.0.1
+[20:12:07] sender: waiting to recvfrom ACK...
+[20:12:07] sender: got message from 127.0.0.1
+[20:12:07] sender: message is 17 bytes long
+[20:12:07] sender: message contains "Acknowledgement:7"
+[20:12:07] sender: Expected ACK received (Acknowledgement: 7)
+
+[20:12:07] sender: sent PACKET: 7 (8 bytes) to 127.0.0.1
+[20:12:07] sender: waiting to recvfrom ACK...
+[20:12:08] sender: got message from 127.0.0.1
+[20:12:08] sender: message is 17 bytes long
+[20:12:08] sender: message contains "Acknowledgement:8"
+[20:12:08] sender: Expected ACK received (Acknowledgement: 8)
+
+[20:12:08] sender: sent PACKET: 8 (8 bytes) to 127.0.0.1
+[20:12:08] sender: waiting to recvfrom ACK...
+[20:12:08] sender: PACKET: 8's retransmission timer expired !!
+[20:12:08] sender: sent PACKET: 8 (8 bytes) to 127.0.0.1
+[20:12:08] sender: waiting to recvfrom ACK...
+[20:12:08] sender: PACKET: 8's retransmission timer expired !!
+[20:12:08] sender: sent PACKET: 8 (8 bytes) to 127.0.0.1
+[20:12:08] sender: waiting to recvfrom ACK...
+[20:12:08] sender: got message from 127.0.0.1
+[20:12:08] sender: message is 17 bytes long
+[20:12:08] sender: message contains "Acknowledgement:9"
+[20:12:08] sender: Expected ACK received (Acknowledgement: 9)
+
+[20:12:08] sender: sent PACKET: 9 (8 bytes) to 127.0.0.1
+[20:12:08] sender: waiting to recvfrom ACK...
+[20:12:09] sender: PACKET: 9's retransmission timer expired !!
+[20:12:09] sender: sent PACKET: 9 (8 bytes) to 127.0.0.1
+[20:12:09] sender: waiting to recvfrom ACK...
+[20:12:09] sender: PACKET: 9's retransmission timer expired !!
+[20:12:09] sender: sent PACKET: 9 (8 bytes) to 127.0.0.1
+[20:12:09] sender: waiting to recvfrom ACK...
+[20:12:09] sender: got message from 127.0.0.1
+[20:12:09] sender: message is 18 bytes long
+[20:12:09] sender: message contains "Acknowledgement:10"
+[20:12:09] sender: Expected ACK received (Acknowledgement: 10)
+
+[20:12:09] sender: sent PACKET: 10 (9 bytes) to 127.0.0.1
+[20:12:09] sender: waiting to recvfrom ACK...
+[20:12:10] sender: PACKET: 10's retransmission timer expired !!
+[20:12:10] sender: sent PACKET: 10 (9 bytes) to 127.0.0.1
+[20:12:10] sender: waiting to recvfrom ACK...
+[20:12:10] sender: got message from 127.0.0.1
+[20:12:10] sender: message is 18 bytes long
+[20:12:10] sender: message contains "Acknowledgement:11"
+[20:12:10] sender: Expected ACK received (Acknowledgement: 11)
+
+[20:12:10] sender: sent PACKET: 11 (9 bytes) to 127.0.0.1
+[20:12:10] sender: waiting to recvfrom ACK...
+[20:12:10] sender: got message from 127.0.0.1
+[20:12:10] sender: message is 18 bytes long
+[20:12:10] sender: message contains "Acknowledgement:12"
+[20:12:10] sender: Expected ACK received (Acknowledgement: 12)
+
+[20:12:10] sender: sent PACKET: 12 (9 bytes) to 127.0.0.1
+[20:12:10] sender: waiting to recvfrom ACK...
+[20:12:10] sender: got message from 127.0.0.1
+[20:12:10] sender: message is 18 bytes long
+[20:12:10] sender: message contains "Acknowledgement:13"
+[20:12:10] sender: Expected ACK received (Acknowledgement: 13)
+
+[20:12:10] sender: sent PACKET: 13 (9 bytes) to 127.0.0.1
+[20:12:10] sender: waiting to recvfrom ACK...
+[20:12:10] sender: got message from 127.0.0.1
+[20:12:10] sender: message is 18 bytes long
+[20:12:10] sender: message contains "Acknowledgement:14"
+[20:12:10] sender: Expected ACK received (Acknowledgement: 14)
+
+[20:12:10] sender: sent PACKET: 14 (9 bytes) to 127.0.0.1
+[20:12:10] sender: waiting to recvfrom ACK...
+[20:12:11] sender: got message from 127.0.0.1
+[20:12:11] sender: message is 18 bytes long
+[20:12:11] sender: message contains "Acknowledgement:15"
+[20:12:11] sender: Expected ACK received (Acknowledgement: 15)
+
+[20:12:11] sender: sent PACKET: 15 (9 bytes) to 127.0.0.1
+[20:12:11] sender: waiting to recvfrom ACK...
+[20:12:11] sender: got message from 127.0.0.1
+[20:12:11] sender: message is 18 bytes long
+[20:12:11] sender: message contains "Acknowledgement:16"
+[20:12:11] sender: Expected ACK received (Acknowledgement: 16)
+
+[20:12:11] sender: Sending END message and exiting!
+[20:12:11] sender: sent PACKET: 0 (8 bytes) to 127.0.0.1

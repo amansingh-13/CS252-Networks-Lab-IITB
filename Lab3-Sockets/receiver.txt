@@ -1,0 +1,174 @@
+[20:11:18] receiver: found and bound a socket
+
+[20:11:18] sender: All socket setup done!
+
+[20:11:18] receiver: waiting to recvfrom...
+[20:12:05] receiver: got message from 127.0.0.1
+[20:12:05] receiver: message is 8 bytes long
+[20:12:05] receiver: message contains "Packet:1"
+[20:12:05] receiver: Expected packet received (Packet: 1)
+[20:12:05] receiver: Dropping Packet: 1
+[20:12:05] receiver: waiting to recvfrom...
+[20:12:05] receiver: got message from 127.0.0.1
+[20:12:05] receiver: message is 8 bytes long
+[20:12:05] receiver: message contains "Packet:1"
+[20:12:05] receiver: Expected packet received (Packet: 1)
+[20:12:05] receiver: sent ACK: 2 (17 bytes) to 127.0.0.1
+
+[20:12:05] receiver: waiting to recvfrom...
+[20:12:05] receiver: got message from 127.0.0.1
+[20:12:05] receiver: message is 8 bytes long
+[20:12:05] receiver: message contains "Packet:2"
+[20:12:05] receiver: Expected packet received (Packet: 2)
+[20:12:05] receiver: Dropping Packet: 2
+[20:12:05] receiver: waiting to recvfrom...
+[20:12:06] receiver: got message from 127.0.0.1
+[20:12:06] receiver: message is 8 bytes long
+[20:12:06] receiver: message contains "Packet:2"
+[20:12:06] receiver: Expected packet received (Packet: 2)
+[20:12:06] receiver: sent ACK: 3 (17 bytes) to 127.0.0.1
+
+[20:12:06] receiver: waiting to recvfrom...
+[20:12:06] receiver: got message from 127.0.0.1
+[20:12:06] receiver: message is 8 bytes long
+[20:12:06] receiver: message contains "Packet:3"
+[20:12:06] receiver: Expected packet received (Packet: 3)
+[20:12:06] receiver: sent ACK: 4 (17 bytes) to 127.0.0.1
+
+[20:12:06] receiver: waiting to recvfrom...
+[20:12:06] receiver: got message from 127.0.0.1
+[20:12:06] receiver: message is 8 bytes long
+[20:12:06] receiver: message contains "Packet:4"
+[20:12:06] receiver: Expected packet received (Packet: 4)
+[20:12:06] receiver: Dropping Packet: 4
+[20:12:06] receiver: waiting to recvfrom...
+[20:12:06] receiver: got message from 127.0.0.1
+[20:12:06] receiver: message is 8 bytes long
+[20:12:06] receiver: message contains "Packet:4"
+[20:12:06] receiver: Expected packet received (Packet: 4)
+[20:12:06] receiver: Dropping Packet: 4
+[20:12:06] receiver: waiting to recvfrom...
+[20:12:07] receiver: got message from 127.0.0.1
+[20:12:07] receiver: message is 8 bytes long
+[20:12:07] receiver: message contains "Packet:4"
+[20:12:07] receiver: Expected packet received (Packet: 4)
+[20:12:07] receiver: sent ACK: 5 (17 bytes) to 127.0.0.1
+
+[20:12:07] receiver: waiting to recvfrom...
+[20:12:07] receiver: got message from 127.0.0.1
+[20:12:07] receiver: message is 8 bytes long
+[20:12:07] receiver: message contains "Packet:5"
+[20:12:07] receiver: Expected packet received (Packet: 5)
+[20:12:07] receiver: sent ACK: 6 (17 bytes) to 127.0.0.1
+
+[20:12:07] receiver: waiting to recvfrom...
+[20:12:07] receiver: got message from 127.0.0.1
+[20:12:07] receiver: message is 8 bytes long
+[20:12:07] receiver: message contains "Packet:6"
+[20:12:07] receiver: Expected packet received (Packet: 6)
+[20:12:07] receiver: Dropping Packet: 6
+[20:12:07] receiver: waiting to recvfrom...
+[20:12:07] receiver: got message from 127.0.0.1
+[20:12:07] receiver: message is 8 bytes long
+[20:12:07] receiver: message contains "Packet:6"
+[20:12:07] receiver: Expected packet received (Packet: 6)
+[20:12:07] receiver: sent ACK: 7 (17 bytes) to 127.0.0.1
+
+[20:12:07] receiver: waiting to recvfrom...
+[20:12:07] receiver: got message from 127.0.0.1
+[20:12:07] receiver: message is 8 bytes long
+[20:12:07] receiver: message contains "Packet:7"
+[20:12:07] receiver: Expected packet received (Packet: 7)
+[20:12:07] receiver: sent ACK: 8 (17 bytes) to 127.0.0.1
+
+[20:12:07] receiver: waiting to recvfrom...
+[20:12:08] receiver: got message from 127.0.0.1
+[20:12:08] receiver: message is 8 bytes long
+[20:12:08] receiver: message contains "Packet:8"
+[20:12:08] receiver: Expected packet received (Packet: 8)
+[20:12:08] receiver: Dropping Packet: 8
+[20:12:08] receiver: waiting to recvfrom...
+[20:12:08] receiver: got message from 127.0.0.1
+[20:12:08] receiver: message is 8 bytes long
+[20:12:08] receiver: message contains "Packet:8"
+[20:12:08] receiver: Expected packet received (Packet: 8)
+[20:12:08] receiver: Dropping Packet: 8
+[20:12:08] receiver: waiting to recvfrom...
+[20:12:08] receiver: got message from 127.0.0.1
+[20:12:08] receiver: message is 8 bytes long
+[20:12:08] receiver: message contains "Packet:8"
+[20:12:08] receiver: Expected packet received (Packet: 8)
+[20:12:08] receiver: sent ACK: 9 (17 bytes) to 127.0.0.1
+
+[20:12:08] receiver: waiting to recvfrom...
+[20:12:08] receiver: got message from 127.0.0.1
+[20:12:08] receiver: message is 8 bytes long
+[20:12:08] receiver: message contains "Packet:9"
+[20:12:08] receiver: Expected packet received (Packet: 9)
+[20:12:08] receiver: Dropping Packet: 9
+[20:12:08] receiver: waiting to recvfrom...
+[20:12:09] receiver: got message from 127.0.0.1
+[20:12:09] receiver: message is 8 bytes long
+[20:12:09] receiver: message contains "Packet:9"
+[20:12:09] receiver: Expected packet received (Packet: 9)
+[20:12:09] receiver: Dropping Packet: 9
+[20:12:09] receiver: waiting to recvfrom...
+[20:12:09] receiver: got message from 127.0.0.1
+[20:12:09] receiver: message is 8 bytes long
+[20:12:09] receiver: message contains "Packet:9"
+[20:12:09] receiver: Expected packet received (Packet: 9)
+[20:12:09] receiver: sent ACK: 10 (18 bytes) to 127.0.0.1
+
+[20:12:09] receiver: waiting to recvfrom...
+[20:12:09] receiver: got message from 127.0.0.1
+[20:12:09] receiver: message is 9 bytes long
+[20:12:09] receiver: message contains "Packet:10"
+[20:12:09] receiver: Expected packet received (Packet: 10)
+[20:12:09] receiver: Dropping Packet: 10
+[20:12:09] receiver: waiting to recvfrom...
+[20:12:10] receiver: got message from 127.0.0.1
+[20:12:10] receiver: message is 9 bytes long
+[20:12:10] receiver: message contains "Packet:10"
+[20:12:10] receiver: Expected packet received (Packet: 10)
+[20:12:10] receiver: sent ACK: 11 (18 bytes) to 127.0.0.1
+
+[20:12:10] receiver: waiting to recvfrom...
+[20:12:10] receiver: got message from 127.0.0.1
+[20:12:10] receiver: message is 9 bytes long
+[20:12:10] receiver: message contains "Packet:11"
+[20:12:10] receiver: Expected packet received (Packet: 11)
+[20:12:10] receiver: sent ACK: 12 (18 bytes) to 127.0.0.1
+
+[20:12:10] receiver: waiting to recvfrom...
+[20:12:10] receiver: got message from 127.0.0.1
+[20:12:10] receiver: message is 9 bytes long
+[20:12:10] receiver: message contains "Packet:12"
+[20:12:10] receiver: Expected packet received (Packet: 12)
+[20:12:10] receiver: sent ACK: 13 (18 bytes) to 127.0.0.1
+
+[20:12:10] receiver: waiting to recvfrom...
+[20:12:10] receiver: got message from 127.0.0.1
+[20:12:10] receiver: message is 9 bytes long
+[20:12:10] receiver: message contains "Packet:13"
+[20:12:10] receiver: Expected packet received (Packet: 13)
+[20:12:10] receiver: sent ACK: 14 (18 bytes) to 127.0.0.1
+
+[20:12:10] receiver: waiting to recvfrom...
+[20:12:10] receiver: got message from 127.0.0.1
+[20:12:10] receiver: message is 9 bytes long
+[20:12:10] receiver: message contains "Packet:14"
+[20:12:10] receiver: Expected packet received (Packet: 14)
+[20:12:10] receiver: sent ACK: 15 (18 bytes) to 127.0.0.1
+
+[20:12:10] receiver: waiting to recvfrom...
+[20:12:11] receiver: got message from 127.0.0.1
+[20:12:11] receiver: message is 9 bytes long
+[20:12:11] receiver: message contains "Packet:15"
+[20:12:11] receiver: Expected packet received (Packet: 15)
+[20:12:11] receiver: sent ACK: 16 (18 bytes) to 127.0.0.1
+
+[20:12:11] receiver: waiting to recvfrom...
+[20:12:11] receiver: got message from 127.0.0.1
+[20:12:11] receiver: message is 8 bytes long
+[20:12:11] receiver: message contains "Packet:0"
+[20:12:11] receiver: Recieved END message, exiting!
