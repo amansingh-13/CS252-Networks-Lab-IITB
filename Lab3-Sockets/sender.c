@@ -27,6 +27,9 @@ time_t mytime;
 #define printf(...) mytime = time(NULL), printf("[%02d:%02d:%02d] ", localtime(&mytime)->tm_hour, localtime(&mytime)->tm_min, localtime(&mytime)->tm_sec), \
                     printf(__VA_ARGS__)
 
+#define fprintf(f_, ...) mytime = time(NULL), fprintf((f_), "[%02d:%02d:%02d] ", localtime(&mytime)->tm_hour, localtime(&mytime)->tm_min, localtime(&mytime)->tm_sec),\
+                    fprintf((f_), __VA_ARGS__)
+
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
