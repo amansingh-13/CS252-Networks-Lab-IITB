@@ -38,15 +38,15 @@ int send_full_file(int connfd, int filefd)
 	if (diff == -1) { break; }
 	bytesleft -= diff;
     }
-
     printf("server: sent %d bytes\n", size-bytesleft);
+
     return diff == -1 ? -1 : 0;
 }
 
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: ./sender <reno|cubic> <path-to-file>\n");
+        fprintf(stderr, "usage: ./server <reno|cubic> <path-to-file>\n");
         exit(1);
     }
 
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
             get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
         printf("server: got connection from %s\n", s);
 
-	    // sends file provided in argv[2] over the connection
+        // sends file provided in argv[2] over the connection
         if (send_full_file(connfd, fileno(file)) == -1) {
             perror("send");
 	    continue;
