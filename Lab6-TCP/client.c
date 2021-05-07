@@ -9,19 +9,11 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/tcp.h>
+#include <sys/time.h>
 
 #define MAXDATASIZE (8*1024*1024) // allocate 8 MB of buffer
 #define FILESIZE (5*1024*1024)    // size of incoming file 5 MB
 #define PORT "1337"
-
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in *)sa)->sin_addr);
-    }
-    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-}
 
 // -------- I hardcoded 5 MB, can't think of a better way -------- //
 
@@ -31,20 +23,19 @@ int recv_full_file(int sockfd, char* buf)
 {
     int bytes_recvd = 0, diff = 0;
     while (bytes_recvd < FILESIZE) {
-        diff = recv(sockfd, buf+bytes_recvd, MAXDATASIZE-bytes_recvd-1, 0);
-	    if (diff == -1) { break; }
-	    bytes_recvd += diff;
+    	diff = recv(sockfd, buf+bytes_recvd, MAXDATASIZE-bytes_recvd-1, 0);
+    	if (diff == -1) { break; }
+    	bytes_recvd += diff;
     }
     buf[bytes_recvd] = '\0';
 
-    printf("client: received %d bytes\n", bytes_recvd);
     return diff == -1 ? -1 : bytes_recvd;
 }
 
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: ./receiver <reno|cubic> <path-to-file>\n");
+        fprintf(stderr, "usage: ./client <reno|cubic> <path-to-file>\n");
         exit(1);
     }
 
@@ -78,7 +69,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-	    // ------ do we need to set this in client too (as TCP is duplex) ? ------//
+	// ------ do we need to set this in client too (as TCP is duplex) ? ------//
         
         // set TCP variant to be used based on argv[1]
         if (setsockopt(sockfd, IPPROTO_TCP, TCP_CONGESTION,
@@ -101,18 +92,20 @@ int main(int argc, char *argv[])
     }
     //--------------------------- RECEIVER SETUP DONE ----------------------------// 
 
-    char s[INET6_ADDRSTRLEN];
     char* buf = malloc(MAXDATASIZE*sizeof(char));
-
-    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
-            s, sizeof s);
-    printf("client: connecting to %s\n", s);
+    struct timeval stop, start;
 
     freeaddrinfo(servinfo); // free data in servinfo
+
+    gettimeofday(&start, NULL);
 
     // receives a file over the connection
     if (recv_full_file(sockfd, buf) == -1)
         perror("send");
+    
+    gettimeofday(&stop, NULL);
+
+    printf("%.6f\n", stop.tv_sec-start.tv_sec + (stop.tv_usec-start.tv_usec)/1000000.0);
 
     fprintf(file, "%s", buf);
 
