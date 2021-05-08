@@ -4,6 +4,8 @@ variants=("reno" "cubic")
 delays=(10 50 100)
 losses=(0.1 0.5 1)
 
+ifconfig lo mtu 1500
+ 
 printf "Delay,Loss,Variant,Mean,Stdev\n" > output.csv
 
 # Loop through all the 18 possibilities and tabulate 

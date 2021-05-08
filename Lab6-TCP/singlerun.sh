@@ -7,11 +7,11 @@ fi
 
 # Check if rule exists if it doesnt then use "add" otherwise use "change".
 
-netem_exists=$(tc qdisc show dev eth1 | grep netem | awk '{print $2}')
+netem_exists=$(tc qdisc show dev lo | grep netem | awk '{print $2}')
 if [[ $netem_exists=="netem" ]]; then
-    tc qdisc del dev eth1 root netem
+    tc qdisc del dev lo root netem
 fi
-tc qdisc change dev lo root netem delay $1ms loss $2%
+tc qdisc add dev lo root netem delay $1ms loss $2%
 
 # Compile Code
 gcc server.c -o server
