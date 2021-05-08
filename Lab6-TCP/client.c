@@ -19,9 +19,6 @@
 // we may be unable to receive full file in one go due to MTU
 // See https://beej.us/guide/bgnet/html/#sendall
 
-// we may be unable to receive full file in one go due to MTU
-// See https://beej.us/guide/bgnet/html/#sendall
-
 // A function to receive the incoming file from the server.
 // Params:
 //      sockfd
