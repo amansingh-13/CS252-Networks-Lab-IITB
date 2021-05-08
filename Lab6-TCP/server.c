@@ -1,5 +1,4 @@
-// [_] Introduce a quiet mode so that this doesn't print anything to the stdout.
-// [_] Introduce a non quiet mode which prints all useful info.
+// Resource used : https://beej.us/guide/bgnet/html/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,21 +16,21 @@
 #define BACKLOG 10 // maximum pending connections
 #define PORT "1338"
 
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET)
-    {
-        return &(((struct sockaddr_in *)sa)->sin_addr);
-    }
-    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-}
-
 // we may be unable to send full file in one go due to MTU
 // See https://beej.us/guide/bgnet/html/#sendall
+
+
+// A function to receive the incoming file from the server.
+// Params:
+//      connfd
+//          File descriptor of socket connection to the client
+//      filefd
+//          File descriptor of file to be sent to the client
+// Returns:
+//      -1 if there is an error, 0 if everything is successful
 int send_full_file(int connfd, int filefd)
 {
-    // get size of file
+    // store size of file in `bytesleft`
     int bytesleft = lseek(filefd, 0, SEEK_END);
     lseek(filefd, 0, SEEK_SET);
     int size = bytesleft, diff = 0;
@@ -40,13 +39,10 @@ int send_full_file(int connfd, int filefd)
     while (bytesleft > 0)
     {
         diff = sendfile(connfd, filefd, &offset, bytesleft);
-        if (diff == -1)
-        {
-            break;
-        }
+        // exit if there is error
+        if (diff == -1) break;
         bytesleft -= diff;
     }
-    // printf("server: sent %d bytes\n", size-bytesleft);
 
     return diff == -1 ? -1 : 0;
 }
@@ -86,6 +82,7 @@ int main(int argc, char *argv[])
     // loop through all the results and bind to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next)
     {
+        // try creating a socket with addrinfo `p`
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                              p->ai_protocol)) == -1)
         {
@@ -107,6 +104,7 @@ int main(int argc, char *argv[])
             perror("setsockopt");
             exit(1);
         }
+        // bind sockfd to addrinfo `p`
         if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
         {
             close(sockfd);
@@ -115,52 +113,51 @@ int main(int argc, char *argv[])
         }
         break;
     }
-    freeaddrinfo(servinfo); // free data in servinfo
+    freeaddrinfo(servinfo); // free servinfo as it not needed anymore
 
+    // exit if we were not able to bind
     if (p == NULL)
     {
         fprintf(stderr, "server: failed to bind\n");
         exit(1);
     }
+
     // start listening on sockfd
     if (listen(sockfd, BACKLOG) == -1)
     {
         perror("listen");
         exit(1);
     }
-    // printf("server: waiting for connections...\n");
 
     //--------------------------- SENDER SETUP DONE ----------------------------//
 
     struct sockaddr_storage their_addr; // client's address information
-    socklen_t sin_size = sizeof their_addr;
-    char s[INET6_ADDRSTRLEN];
+    socklen_t sin_size = sizeof their_addr; 
 
-    // accept loop
+    // accepts connection from client, sends file, waits for another connection 
     while (1)
     {
+        // accepts connection from client 
         connfd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
         if (connfd == -1)
         {
             perror("accept");
             continue;
         }
-        // convert client's address to string for printing
-        inet_ntop(their_addr.ss_family,
-                  get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
-        // printf("server: got connection from %s\n", s);
 
         // sends file provided in argv[2] over the connection
+        // fileno() returns the file descriptor corresponding to the `file` struct
         if (send_full_file(connfd, fileno(file)) == -1)
         {
             perror("send");
             continue;
         }
 
+        // close connection to client
         close(connfd);
     }
 
-    // close files (but we never reach here)
+    // close files
     close(sockfd);
     fclose(file);
     return 0;

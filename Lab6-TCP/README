@@ -16,4 +16,4 @@ WHAT ARE THE CONTENTS?
 3. master.sh for simulating all the 18*20 runs and tabulating the values in an output.csv
 4. plotfigs.sh for executing plot.py and generating the plots
 5. mean.py and stddev.py for generating mean and stddev of numbers passed as arguments
-6. plot.py uses matplotlib and pandas to process the output.csv and plat all the 6 figures.
+6. plot.py uses matplotlib and pandas to process the output.csv and plot all the 6 figures.
