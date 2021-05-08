@@ -6,7 +6,6 @@ if [ $# -ne 3 ]; then
 fi
 
 # Check if rule exists if it doesnt then use "add" otherwise use "change".
-
 netem_exists=$(tc qdisc show dev lo | grep netem | awk '{print $2}')
 if [[ $netem_exists=="netem" ]]; then
     tc qdisc del dev lo root netem
