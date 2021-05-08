@@ -6,6 +6,11 @@ if [ $# -ne 3 ]; then
 fi
 
 # Check if rule exists if it doesnt then use "add" otherwise use "change".
+
+netem_exists=$(tc qdisc show dev eth1 | grep netem | awk '{print $2}')
+if [[ $netem_exists=="netem" ]]; then
+    tc qdisc del dev eth1 root netem
+fi
 tc qdisc change dev lo root netem delay $1ms loss $2%
 
 # Compile Code
@@ -20,7 +25,7 @@ throughputs=()
 sleep 1
 
 # Runs the experiment for 20 times
-for i in {1..20}; do 
+for i in {1..20}; do
     throughputs+=("$(./client $3 recv.txt)")
     if [[ "$(diff send.txt recv.txt)" != "" ]]; then
         echo "Transmission Failure: SENT and RCVD file MISMATCH."
@@ -36,5 +41,4 @@ stdev="$(python3 stddev.py "${throughputs[@]}")"
 mean="$(python3 mean.py "${throughputs[@]}")"
 
 # Add a row in the output.csv
-printf '%s\n' $1 $2 $3 $mean $stdev | paste -sd ',' >> output.csv
-
+printf '%s\n' $1 $2 $3 $mean $stdev | paste -sd ',' >>output.csv
